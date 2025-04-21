@@ -29,10 +29,10 @@ from pathlib import Path
 import click
 from loguru import logger
 
-from fish_audio_preprocess.utils.stage_logger import StageLogger
-from fish_audio_preprocess.utils.file import list_files, AUDIO_EXTENSIONS
-from fish_audio_preprocess.utils.extract_embedding import extract_embedding
-from fish_audio_preprocess.utils.cluster_embeddings import cluster_embeddings
+from audio_preprocess.utils.stage_logger import StageLogger
+from audio_preprocess.utils.file import list_files, AUDIO_EXTENSIONS
+from audio_preprocess.utils.extract_embedding import extract_embedding
+from audio_preprocess.utils.cluster_embeddings import cluster_embeddings
 
 
 

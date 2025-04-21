@@ -7,7 +7,7 @@ import click
 from loguru import logger
 from tqdm import tqdm
 
-from fish_audio_preprocess.utils.file import AUDIO_EXTENSIONS, list_files
+from audio_preprocess.utils.file import AUDIO_EXTENSIONS, list_files
 
 
 def process_one(file, input_dir):

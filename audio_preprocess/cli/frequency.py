@@ -9,7 +9,7 @@ import numpy as np
 from loguru import logger
 from tqdm import tqdm
 
-from fish_audio_preprocess.utils.file import list_files
+from audio_preprocess.utils.file import list_files
 
 
 def count_notes_from_file(file: Union[Path, str]) -> Counter:

@@ -7,7 +7,7 @@ import librosa
 import numpy as np
 import soundfile as sf
 
-from fish_audio_preprocess.utils.slice_audio import slice_by_max_duration
+from audio_preprocess.utils.slice_audio import slice_by_max_duration
 
 
 def merge_short_chunks(chunks, max_duration, rate):

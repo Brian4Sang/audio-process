@@ -6,8 +6,8 @@ import soundfile as sf
 from loguru import logger
 from tqdm import tqdm
 
-from fish_audio_preprocess.utils.file import AUDIO_EXTENSIONS, list_files
-from fish_audio_preprocess.utils.slice_audio_v2 import merge_short_chunks
+from audio_preprocess.utils.file import AUDIO_EXTENSIONS, list_files
+from audio_preprocess.utils.slice_audio_v2 import merge_short_chunks
 
 
 @click.command()

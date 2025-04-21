@@ -23,8 +23,8 @@ import click
 from loguru import logger
 from tqdm import tqdm
 
-from fish_audio_preprocess.utils.file import AUDIO_EXTENSIONS, list_files, make_dirs
-from fish_audio_preprocess.utils.stage_logger import StageLogger
+from audio_preprocess.utils.file import AUDIO_EXTENSIONS, list_files, make_dirs
+from audio_preprocess.utils.stage_logger import StageLogger
 
 
 @click.command()
@@ -48,7 +48,7 @@ def slice_audio(
     num_workers, min_duration, max_duration, min_silence_duration,
     top_db, hop_length, max_silence_kept, flat_layout, merge_short, logdir
 ):
-    from fish_audio_preprocess.utils.slice_audio_v2 import slice_audio_file_v2
+    from audio_preprocess.utils.slice_audio_v2 import slice_audio_file_v2
 
     input_dir, output_dir = Path(input_dir), Path(output_dir)
 

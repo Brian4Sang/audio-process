@@ -26,8 +26,8 @@ from tqdm import tqdm
 import soundfile as sf
 import pyloudnorm as pyln
 
-from fish_audio_preprocess.utils.file import list_files, AUDIO_EXTENSIONS, make_dirs
-from fish_audio_preprocess.utils.stage_logger import StageLogger
+from audio_preprocess.utils.file import list_files, AUDIO_EXTENSIONS, make_dirs
+from audio_preprocess.utils.stage_logger import StageLogger
 
 
 def normalize_file(input_file, output_file, loudness, peak, block_size, logger_obj=None):

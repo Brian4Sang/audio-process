@@ -5,8 +5,8 @@ import click
 from loguru import logger
 from tqdm import tqdm
 
-from fish_audio_preprocess.utils.stage_logger import StageLogger
-from fish_audio_preprocess.utils.file import (
+from audio_preprocess.utils.stage_logger import StageLogger
+from audio_preprocess.utils.file import (
     AUDIO_EXTENSIONS,
     VIDEO_EXTENSIONS,
     list_files,

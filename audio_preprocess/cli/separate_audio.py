@@ -27,8 +27,8 @@ from loguru import logger
 from tqdm import tqdm
 import soundfile as sf
 
-from fish_audio_preprocess.utils.file import AUDIO_EXTENSIONS, list_files, make_dirs
-from fish_audio_preprocess.utils.stage_logger import StageLogger
+from audio_preprocess.utils.file import AUDIO_EXTENSIONS, list_files, make_dirs
+from audio_preprocess.utils.stage_logger import StageLogger
 
 if TYPE_CHECKING:
     import torch
@@ -48,7 +48,7 @@ def worker(
     logdir: str = None,
     strict_check: bool = True,
 ):
-    from fish_audio_preprocess.utils.separate_audio import (
+    from audio_preprocess.utils.separate_audio import (
         init_model,
         load_track,
         merge_tracks,

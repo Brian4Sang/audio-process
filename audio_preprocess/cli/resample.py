@@ -6,8 +6,8 @@ import click
 from loguru import logger
 from tqdm import tqdm
 
-from fish_audio_preprocess.utils.file import AUDIO_EXTENSIONS, list_files, make_dirs
-from fish_audio_preprocess.utils.stage_logger import StageLogger
+from audio_preprocess.utils.file import AUDIO_EXTENSIONS, list_files, make_dirs
+from audio_preprocess.utils.stage_logger import StageLogger
 
 
 def resample_file(
