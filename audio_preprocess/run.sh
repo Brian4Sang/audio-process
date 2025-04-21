@@ -8,7 +8,7 @@ stop_stage=3
 raw_input_dir="/workspace/workdir/tts_data_traning/LibriTTS/ximalaya/mp3test"
 
 # 项目路径
-project_dir="/brian_f/audio-preprocess"
+project_dir="/brian_f/audio-pipeline"
 
 # 统一的数据输出根目录/${project_dir}/data_root
 data_root="data"
@@ -35,7 +35,7 @@ if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
   echo "Stage 0: Converting input files to wav (no resample)...\
         you will get .wav in data/to_wav/"
 
-  python -m fish_audio_preprocess.cli.convert_to_wav \
+  python -m audio_preprocess.cli.convert_to_wav \
     "${raw_input_dir}" "${wav_dir}" \
     --recursive \
     --segment 0 \
@@ -49,7 +49,7 @@ if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
   echo " Stage 1: Resample audio to 24kHz, mono...\
           you will get resampled ${sampling_rate} .wav in ${resample_dir}"
 
-  python -m fish_audio_preprocess.cli.resample \
+  python -m audio_preprocess.cli.resample \
     "${wav_dir}" "${resample_dir}" \
     --recursive \
     --sampling-rate ${sampling_rate} \
@@ -68,7 +68,7 @@ if [ ${stage} -le 2 ] && [ ${stop_stage} -ge 2 ]; then
   echo "Stage 2: Separate vocals from mixture...\
   you will get separated vocals in data/eparate_vocals_${resample_tag}"
 
-  python -m fish_audio_preprocess.cli.separate_audio \
+  python -m audio_preprocess.cli.separate_audio \
     "${resample_dir}" "${separate_dir}" \
     --track vocals \
     --model htdemucs \
@@ -85,7 +85,7 @@ fi
 # if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
 #   echo "Stage 3: Slicing long audio into short chunks ...\
 #         you will get sliced piece in ${slice_dir}"
-#   python -m fish_audio_preprocess.cli.slice_audio \
+#   python -m audio_preprocess.cli.slice_audio \
 #     "${separate_dir}" "${slice_dir}" \
 #     --min-duration 3.0 \
 #     --max-duration 10.0 \
@@ -116,7 +116,7 @@ if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
       --extend-sec 0.3 \
       --device cpu
   elif [ "$slice_mode" == "energy" ]; then
-    python -m fish_audio_preprocess.cli.slice_audio \
+    python -m audio_preprocess.cli.slice_audio \
       "${separate_dir}" "${slice_dir}" \
       --min-duration 3.0 \
       --max-duration 10.0 \
@@ -142,9 +142,9 @@ if [ ${stage} -le 4 ] && [ ${stop_stage} -ge 4 ]; then
   echo "Stage 4: Multi-speaker detection... \
         you will get resluts in ${log_root}/multi_spk_pred.json"
 
-  python -m fish_audio_preprocess.cli.detect_multi_speaker \
+  python -m audio_preprocess.cli.detect_multi_speaker \
     --input-dir data/sliced \
-    --embedding-model /brian_f/audio-preprocess/fish_audio_preprocess/pretrained_models/campplus.onnx \
+    --embedding-model /brian_f/audio-preprocess/audio_preprocess/pretrained_models/campplus.onnx \
     --output-json ${log_root}/multi_spk_pred.json \
     --logdir logs
 
@@ -165,7 +165,7 @@ if [ ${stage} -le 5 ] && [ ${stop_stage} -ge 5 ]; then
 
  
 
-  python -m fish_audio_preprocess.cli.loudness_norm \
+  python -m audio_preprocess.cli.loudness_norm \
     "${sliced_dir}" "${volnorm_dir}" \
     --recursive \
     --overwrite \
@@ -183,7 +183,7 @@ if [ ${stage} -le 6 ] && [ ${stop_stage} -ge 6 ]; then
   echo -e " Stage 6: Transcribe audio using FunASR with punctuation
             you will get .lab in the same dir"
 
-  python -m fish_audio_preprocess.cli.transcribe \
+  python -m audio_preprocess.cli.transcribe \
     data/vol_norm \
     --recursive \
     --lang zh \
