@@ -1,0 +1,11 @@
+{
+  "stage": "resample",
+  "summary": {
+    "total": 2,
+    "success": 0,
+    "skipped": 0,
+    "failed": 0
+  },
+  "skipped": [],
+  "failed": []
+}

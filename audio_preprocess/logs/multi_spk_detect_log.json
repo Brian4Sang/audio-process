@@ -1,0 +1,11 @@
+{
+  "stage": "multi_spk_detect",
+  "summary": {
+    "total": 88,
+    "success": 88,
+    "skipped": 0,
+    "failed": 0
+  },
+  "skipped": [],
+  "failed": []
+}

@@ -1,0 +1,11 @@
+{
+  "stage": "convert_to_wav",
+  "summary": {
+    "total": 2,
+    "success": 2,
+    "skipped": 0,
+    "failed": 0
+  },
+  "skipped": [],
+  "failed": []
+}
