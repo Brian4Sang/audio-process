@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-stage=7
-stop_stage=7
+stage=8
+stop_stage=8
 
 # 原始音频路径（支持 mp3/mp4/wav）
 raw_input_dir="/workspace/workdir/tts_data_traning/LibriTTS/ximalaya/mp3test"
@@ -216,20 +216,21 @@ if [ ${stage} -le 7 ] && [ ${stop_stage} -ge 7 ]; then
 fi
 
 # Stage 8: Compute DNSMOS scores
-dnsmos_csv="results/dnsmos_scores.csv"
+dnsmos_csv="dns_results/${volnorm_dir}"
 personalized_flag=""
 # 个性化模型
 # personalized_flag="--personalized"
 
 if [ ${stage} -le 8 ] && [ ${stop_stage} -ge 8 ]; then
   echo -e " Stage 8: Compute DNSMOS scores for audio quality evaluation
-            Output: CSV=${dnsmos_csv}, logs in ${dnsmos_logdir}"
+            you will get dns.csv in ${dnsmos_csv}..."
+  mkdir -p "${dnsmos_csv}"
 
   python -m audio_preprocess.cli.dnsmos_score \
     --input-dir ${volnorm_dir} \
-    --output-csv ${dnsmos_csv} \
+    --output-csv ${dnsmos_csv}/dnsmos.csv \
     --logdir logs \
-    ${personalized_flag}
+    --filter 3.5
 
   echo " Stage 8 done. DNSMOS scores written to ${dnsmos_csv}"
 fi
