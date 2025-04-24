@@ -1,11 +1,20 @@
 {
   "stage": "convert_to_wav",
   "summary": {
-    "total": 2,
-    "success": 2,
-    "skipped": 0,
+    "total": 3,
+    "success": 1,
+    "skipped": 2,
     "failed": 0
   },
-  "skipped": [],
+  "skipped": [
+    {
+      "file": "/workspace/workdir/tts_data_traning/LibriTTS/ximalaya/mp3test/ximalaya-69428459-552063829.mp3",
+      "reason": "文件已存在，未开启 overwrite"
+    },
+    {
+      "file": "/workspace/workdir/tts_data_traning/LibriTTS/ximalaya/mp3test/ximalaya-69428459-552988902.mp3",
+      "reason": "文件已存在，未开启 overwrite"
+    }
+  ],
   "failed": []
 }

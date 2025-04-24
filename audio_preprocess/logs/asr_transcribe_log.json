@@ -1,8 +1,8 @@
 {
   "stage": "asr_transcribe",
   "summary": {
-    "total": 88,
-    "success": 88,
+    "total": 145,
+    "success": 145,
     "skipped": 0,
     "failed": 0
   },

@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-stage=3
-stop_stage=3
+stage=7
+stop_stage=7
 
 # 原始音频路径（支持 mp3/mp4/wav）
 raw_input_dir="/workspace/workdir/tts_data_traning/LibriTTS/ximalaya/mp3test"
@@ -29,6 +29,8 @@ slice_dir="${data_root}/sliced_silero"
 
 # 日志目录
 log_root="logs"
+
+embedding_model="/brian_f/audio-pipeline/audio_preprocess/pretrained_models/campplus.onnx"
 
 # Stage 0: Convert to wav (no resample)
 if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
@@ -128,7 +130,7 @@ if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
       --overwrite \
       --logdir "${log_root}"
   else
-    echo "❌ Unsupported slice_mode: $slice_mode"
+    echo "Unsupported slice_mode: $slice_mode"
     exit 1
   fi
 
@@ -142,9 +144,9 @@ if [ ${stage} -le 4 ] && [ ${stop_stage} -ge 4 ]; then
   echo "Stage 4: Multi-speaker detection... \
         you will get resluts in ${log_root}/multi_spk_pred.json"
 
-  python -m audio_preprocess.cli.detect_multi_speaker \
-    --input-dir data/sliced \
-    --embedding-model /brian_f/audio-preprocess/audio_preprocess/pretrained_models/campplus.onnx \
+  python -m audio_preprocess.cli.multi_spk_detect \
+    --input-dir ${slice_dir} \
+    --embedding-model ${embedding_model} \
     --output-json ${log_root}/multi_spk_pred.json \
     --logdir logs
 
@@ -152,7 +154,7 @@ if [ ${stage} -le 4 ] && [ ${stop_stage} -ge 4 ]; then
 fi
 
 # Stage 5: Loudness Normalization
-  sliced_dir="${data_root}/sliced"
+  # sliced_dir="${data_root}/sliced"
   volnorm_dir="${data_root}/vol_norm"
 if [ ${stage} -le 5 ] && [ ${stop_stage} -ge 5 ]; then
   echo -e " Stage 5: Loudness normalization (LUFS + Peak)...\n
@@ -166,7 +168,7 @@ if [ ${stage} -le 5 ] && [ ${stop_stage} -ge 5 ]; then
  
 
   python -m audio_preprocess.cli.loudness_norm \
-    "${sliced_dir}" "${volnorm_dir}" \
+    "${slice_dir}" "${volnorm_dir}" \
     --recursive \
     --overwrite \
     --num-workers 8 \
@@ -184,7 +186,7 @@ if [ ${stage} -le 6 ] && [ ${stop_stage} -ge 6 ]; then
             you will get .lab in the same dir"
 
   python -m audio_preprocess.cli.transcribe \
-    data/vol_norm \
+    ${volnorm_dir} \
     --recursive \
     --lang zh \
     --model-type funasr \
@@ -193,6 +195,45 @@ if [ ${stage} -le 6 ] && [ ${stop_stage} -ge 6 ]; then
 
   echo " Stage 6 done. Transcriptions saved as .lab files in the audio path"
 fi
+
+# Stage 7: Cluster speakers based on embedding
+  cluster_dir="${data_root}/cluster_spk"\
+  method="dbscan"
+if [ ${stage} -le 7 ] && [ ${stop_stage} -ge 7 ]; then
+  echo -e " Stage 7: Cluster speakers using ECAPA embedding + Agglomerative clustering
+            you will get utt2spk.json and audio organized by speakers in ${cluster_dir}"
+
+  python -m audio_preprocess.cli.multi_spk_cluster \
+    --input-dir ${volnorm_dir}\
+    --embedding-model ${embedding_model} \
+    --output-json ${cluster_dir}/utt2spk.json \
+    --output-split-dir ${cluster_dir} \
+    --logdir logs \
+    --method ${method} \
+    --recursive
+
+  echo " Stage 7 done. Speaker clusters written to utt2spk.json, audios grouped under data/split_by_spk"
+fi
+
+# Stage 8: Compute DNSMOS scores
+dnsmos_csv="results/dnsmos_scores.csv"
+personalized_flag=""
+# 个性化模型
+# personalized_flag="--personalized"
+
+if [ ${stage} -le 8 ] && [ ${stop_stage} -ge 8 ]; then
+  echo -e " Stage 8: Compute DNSMOS scores for audio quality evaluation
+            Output: CSV=${dnsmos_csv}, logs in ${dnsmos_logdir}"
+
+  python -m audio_preprocess.cli.dnsmos_score \
+    --input-dir ${volnorm_dir} \
+    --output-csv ${dnsmos_csv} \
+    --logdir logs \
+    ${personalized_flag}
+
+  echo " Stage 8 done. DNSMOS scores written to ${dnsmos_csv}"
+fi
+
 
 
 

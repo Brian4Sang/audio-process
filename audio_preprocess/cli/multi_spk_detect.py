@@ -16,7 +16,6 @@
 --input-dir         输入音频目录
 --output-json       保存检测结果的路径（默认 multi_spk_result.json）
 --embedding-model   用于提取 speaker embedding 的模型路径（onnx）
---threshold         判断为多说话人的类间距离阈值（默认 0.75）
 --logdir            保存处理日志的目录（默认 logs/）
 """
 

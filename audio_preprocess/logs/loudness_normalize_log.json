@@ -1,8 +1,8 @@
 {
   "stage": "loudness_normalize",
   "summary": {
-    "total": 88,
-    "success": 88,
+    "total": 125,
+    "success": 125,
     "skipped": 0,
     "failed": 0
   },

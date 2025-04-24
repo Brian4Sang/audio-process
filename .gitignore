@@ -1,0 +1,41 @@
+# ===== Python 基础 =====
+__pycache__/
+*.py[cod]
+*.pyo
+*.so
+*.egg-info/
+*.log
+
+# ===== 虚拟环境、包缓存 =====
+.env
+.venv
+env/
+venv/
+*.zip
+*.tar.gz
+*.whl
+pip-wheel-metadata/
+dist/
+build/
+
+# ===== Jupyter Notebook 缓存 =====
+.ipynb_checkpoints/
+
+# ===== 编辑器配置 =====
+.vscode/
+.idea/
+.DS_Store
+
+# ===== 音频处理结果（你项目特有）=====
+data/
+logs/
+exp/
+*.wav
+*.mp3
+*.flac
+*.pcm
+*.ogg
+*.m4a
+*.opus
+*.aac
+*.srt
