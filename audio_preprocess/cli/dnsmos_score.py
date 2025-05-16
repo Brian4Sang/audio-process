@@ -7,6 +7,12 @@ DNSMOS 打分（支持筛选）
 --personalized    是否启用个性化模型（pDNSMOS）
 --logdir          日志输出目录
 --filter          OVRL 评分阈值，筛选出 >= 此值的音频并生成 manifest
+
+评估字段名	含义
+SIG	Speech Quality：语音本身的清晰度与自然度（去噪后语音的质量）
+BAK	Background Quality：背景噪声的自然度与干净程度（背景声音是否干扰）
+OVRL	Overall Quality：综合主观感知得分（包括语音、背景、自然性）✅ 推荐首选
+P808_MOS	模拟人类主观评分的另一路 MOS 预测（辅助参考）
 """
 
 import os
@@ -139,6 +145,23 @@ def main(input_dir, output_csv, personalized, logdir, filter):
         dur_fail = sum(e["duration"] for e in fail_entries)
         logger.info(f"✅ 合格音频数: {len(pass_entries)}，总时长: {dur_pass:.1f} 秒")
         logger.info(f"❌ 不合格音频数: {len(fail_entries)}，总时长: {dur_fail:.1f} 秒")
+
+        # 所有样本的 OVRL 与 duration 提取
+        ovrl_scores = [row["OVRL"] for row in rows]
+        durations = [row["duration"] for row in rows]
+
+        if ovrl_scores:
+            mean_score = np.mean(ovrl_scores)
+            median_score = np.median(ovrl_scores)
+            dur_over_median = sum(d for o, d in zip(ovrl_scores, durations) if o > median_score)
+            dur_total = sum(durations)
+            ratio = dur_over_median / dur_total * 100 if dur_total > 0 else 0
+
+            logger.info(f" 平均 OVRL 分数: {mean_score:.2f}")
+            logger.info(f" 中位数 OVRL 分数: {median_score:.2f}")
+            logger.info(f"📈 高于中位数的音频总时长: {dur_over_median:.1f} 秒")
+            logger.info(f"📈 占全部音频总时长的比例: {ratio:.2f}%")
+
 
     stage_logger.save()
     logger.info(f"日志已保存至 {logdir}/dnsmos_log.json")

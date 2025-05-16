@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Stage 7: ASR 识别（音频转文本）
+Stage 7: ASR 识别(音频转文本)
 
-功能：对指定目录中的所有音频文件进行语音识别，输出对应的 .lab 文本（纯文本，无标点）。
+功能：对指定目录中的所有音频文件进行语音识别，输出对应的 .lab 文本(纯文本，无标点)。
 
 支持模型：
 - Whisper (faster-whisper)
@@ -10,15 +10,14 @@ Stage 7: ASR 识别（音频转文本）
 
 输出：
 - 每条音频同目录生成一个 .lab 文件
-- 日志文件记录识别情况（成功 / 跳过 / 失败）
+- 日志文件记录识别情况(成功 / 跳过 / 失败)
 
 参数：
---lang             语言代码（如 zh, en, ja）
---model-size       模型大小（Whisper: base/small/medium/...；FunASR: paraformer-zh 等）
---model-type       模型类型（whisper 或 funasr）
---compute-type     Whisper 的计算类型：float16 / float32 / int8
---batch-size       Whisper 的 batch size（仅在支持 batched 推理时生效）
---logdir           日志保存目录（默认 logs/）
+--lang             语言代码(如 zh, en)
+--model-type       模型类型(zh:paraformer-zh and sensevoice-small) (en:whisper and paraformer-en)
+--compute-type     Whisper 的计算类型: float16 / float32 / int8
+--batch-size       Whisper 的 batch size(仅在支持 batched 推理时生效)
+--logdir           日志保存目录(默认 logs/)
 """
 
 import multiprocessing as mp
@@ -43,17 +42,16 @@ def replace_lastest(string, old, new):
 @click.argument("input_dir", type=click.Path(exists=True, file_okay=False))
 @click.option("--num-workers", default=2, show_default=True, type=int, help="并行处理的进程数")
 @click.option("--lang", default="zh", show_default=True, help="识别语言代码")
-@click.option("--model-size", default="medium", show_default=True, help="Whisper模型或FunASR模型名")
-@click.option("--model-type", default="whisper", show_default=True, help="模型类型：whisper 或 funasr")
+@click.option("--model-type", default="paraformer", show_default=True, help="模型类型：whisper 或 funasr")
 @click.option("--compute-type", default="float16", show_default=True, help="Whisper的推理精度")
-@click.option("--batch-size", default=1, show_default=True, help="Whisper batch size（仅batched支持）")
+@click.option("--batch-size", default=1, show_default=True, help=" batch size(仅batched支持)")
 @click.option("--recursive/--no-recursive", default=True, help="是否递归扫描子目录")
 @click.option("--logdir", default="logs", type=click.Path(file_okay=False), help="日志保存目录")
 def transcribe(
     input_dir: str,
     num_workers: int,
     lang: str,
-    model_size: str,
+    # model_size: str,
     model_type: ASRModelType,
     compute_type: str,
     batch_size: int,
@@ -69,7 +67,7 @@ def transcribe(
         if ctx.get_parameter_source(key) == click.core.ParameterSource.COMMANDLINE
     }
 
-    if model_type == "funasr" and "model_size" not in provided_options:
+    if model_type == "funasr" :
         logger.info("未指定 funasr 模型，使用默认模型：iic/SenseVoiceSmall")
         model_size = "iic/SenseVoiceSmall"
 
@@ -77,7 +75,7 @@ def transcribe(
         logger.warning("检测CUDA不可用，将使用 CPU 进行识别")
 
     logger.info(f"识别目录：{input_dir}")
-    logger.info(f"模型类型：{model_type} | 模型名：{model_size} | 语言：{lang}")
+    logger.info(f"模型类型：{model_type} |  语言：{lang}")
     logger.info(f"并行进程数：{num_workers}")
 
     audio_files = list_files(input_dir, extensions=AUDIO_EXTENSIONS, recursive=recursive)
@@ -97,7 +95,7 @@ def transcribe(
                 executor.submit(
                     batch_transcribe,
                     files=chunk,
-                    model_size=model_size,
+                    # model_size=model_size,
                     model_type=model_type,
                     lang=lang,
                     pos=chunk_id,

@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-stage=8
-stop_stage=8
+stage=6
+stop_stage=6
 
 # 原始音频路径（支持 mp3/mp4/wav）
 raw_input_dir="/workspace/workdir/tts_data_traning/LibriTTS/ximalaya/mp3test"
@@ -155,14 +155,14 @@ fi
 
 # Stage 5: Loudness Normalization
   # sliced_dir="${data_root}/sliced"
-  volnorm_dir="${data_root}/vol_norm"
+  volnorm_dir="${data_root}/vol_norm-16-3-s"
 if [ ${stage} -le 5 ] && [ ${stop_stage} -ge 5 ]; then
   echo -e " Stage 5: Loudness normalization (LUFS + Peak)...\n
           you will get norm-volume wav in ${volnorm_dir}"
 
   # 设置响度参数（可调节）
-  target_loudness=-23.0   # LUFS
-  peak_level=-1.0         # dBFS
+  target_loudness=-16.0   # LUFS
+  peak_level=-3.1         # dBFS
   block_size=0.4          # 每块用于评估 loudness 的窗口大小（秒）
 
  
@@ -180,20 +180,29 @@ if [ ${stage} -le 5 ] && [ ${stop_stage} -ge 5 ]; then
   echo " Stage 5 done. Normalized audio saved to: ${volnorm_dir}"
 fi
 
+  
 # Stage 6: Transcribe audio to text with FunASR
 if [ ${stage} -le 6 ] && [ ${stop_stage} -ge 6 ]; then
   echo -e " Stage 6: Transcribe audio using FunASR with punctuation
-            you will get .lab in the same dir"
+            you will get .lab in the audio dir"
+
+  volnorm_dir="/brian/cosy/cosyvoice/main/CosyVoice/examples/libritts/cosyvoice2/outputs/test/female-15/tianq-15-uni-last/"
+  logdir="/brian/cosy/cosyvoice/main/CosyVoice/examples/libritts/cosyvoice2/outputs/test/female-15/tianq-15-uni-last/results/logs"
+
+  if [ ! -d "$logdir" ]; then
+  echo "Log directory doesn't exist. Creating now."
+  mkdir -p $logdir
+  fi
 
   python -m audio_preprocess.cli.transcribe \
     ${volnorm_dir} \
-    --recursive \
+    --no-recursive \
     --lang zh \
-    --model-type funasr \
-    --model-size paraformer-zh \
-    --num-workers 1
+    --model-type sensevoice \
+    --num-workers 1 \
+    --logdir ${logdir}
 
-  echo " Stage 6 done. Transcriptions saved as .lab files in the audio path"
+  echo " Stage 6 done."
 fi
 
 # Stage 7: Cluster speakers based on embedding
@@ -227,8 +236,8 @@ if [ ${stage} -le 8 ] && [ ${stop_stage} -ge 8 ]; then
   mkdir -p "${dnsmos_csv}"
 
   python -m audio_preprocess.cli.dnsmos_score \
-    --input-dir ${volnorm_dir} \
-    --output-csv ${dnsmos_csv}/dnsmos.csv \
+    --input-dir /brian_f/audio-pipeline/audio_preprocess/data/vol_norm-16-3-s \
+    --output-csv ${dnsmos_csv}/norm-16-3-s.csv \
     --logdir logs \
     --filter 3.5
 
